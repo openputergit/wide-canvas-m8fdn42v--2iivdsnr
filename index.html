@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeartHeal - Mental Health Support</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+        }
+        #loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" class="z-50">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+    </div>
+
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="#" class="text-2xl font-bold text-teal-600">HeartHeal</a>
+                </div>
+                <div class="hidden md:flex items-center space-x-4" id="navMenu">
+                    <a href="#" onclick="showSection('home')" class="nav-link text-gray-600 hover:text-teal-600">Home</a>
+                    <a href="#" onclick="showSection('dashboard')" class="nav-link auth-required text-gray-600 hover:text-teal-600 hidden">Dashboard</a>
+                    <a href="#" onclick="showSection('journal')" class="nav-link auth-required text-gray-600 hover:text-teal-600 hidden">Journal</a>
+                    <a href="#" onclick="showSection('music-quotes')" class="nav-link auth-required text-gray-600 hover:text-teal-600 hidden">Music & Quotes</a>
+                    <a href="#" onclick="showSection('profile')" class="nav-link auth-required text-gray-600 hover:text-teal-600 hidden">Profile</a>
+                    <a href="#" id="loginBtn" onclick="showSection('login')" class="text-gray-600 hover:text-teal-600">Login</a>
+                    <a href="#" id="signupBtn" onclick="showSection('signup')" class="text-gray-600 hover:text-teal-600">Sign Up</a>
+                    <a href="#" id="logoutBtn" onclick="logout()" class="auth-required text-gray-600 hover:text-teal-600 hidden">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home" class="min-h-screen pt-20 gradient-bg">
+        <div class="max-w-7xl mx-auto px-4 py-16">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-gray-800 mb-6">Welcome to HeartHeal</h1>
+                <p class="text-xl text-gray-600 mb-8">Your safe space for mental wellness and emotional support</p>
+                <button onclick="showSection('signup')" class="bg-teal-600 text-white px-8 py-3 rounded-full hover:bg-teal-700 transition">Get Started</button>
+            </div>
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <i class="bi bi-journal-text text-4xl text-teal-600"></i>
+                    <h3 class="text-xl font-semibold mt-4">Personal Journal</h3>
+                    <p class="text-gray-600 mt-2">Track your thoughts and emotions with our private journaling system</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <i class="bi bi-music-note-beamed text-4xl text-teal-600"></i>
+                    <h3 class="text-xl font-semibold mt-4">Calming Music</h3>
+                    <p class="text-gray-600 mt-2">Access our curated collection of soothing music for relaxation</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <i class="bi bi-quote text-4xl text-teal-600"></i>
+                    <h3 class="text-xl font-semibold mt-4">Daily Inspiration</h3>
+                    <p class="text-gray-600 mt-2">Start your day with motivational quotes and affirmations</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Section -->
+    <section id="login" class="min-h-screen pt-20 hidden">
+        <div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold text-center mb-6">Login</h2>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                    <input type="email" id="loginEmail" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-teal-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <input type="password" id="loginPassword" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-teal-500">
+                </div>
+                <button type="submit" class="w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700">Login</button>
+                <p class="text-center mt-4">
+                    <a href="#" onclick="showSection('forgot-password')" class="text-teal-600 hover:text-teal-700">Forgot Password?</a>
+                </p>
+            </form>
+        </div>
+    </section>
+
+    <!-- Signup Section -->
+    <section id="signup" class="min-h-screen pt-20 hidden">
+        <div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold text-center mb-6">Sign Up</h2>
+            <form id="signupForm" onsubmit="handleSignup(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Username</label>
+                    <input type="text" id="signupUsername" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-teal-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                    <input type="email" id="signupEmail" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-teal-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <input type="password" id="signupPassword" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-teal-500">
+                </div>
+                <button type="submit" class="w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700">Sign Up</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="min-h-screen pt-20 hidden">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <h2 class="text-3xl font-bold mb-6">Welcome Back!</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4">Mood Tracker</h3>
+                    <div class="flex space-x-4">
+                        <button onclick="trackMood('happy')" class="p-2 hover:bg-gray-100 rounded-full"><i class="bi bi-emoji-smile text-2xl"></i></button>
+                        <button onclick="trackMood('neutral')" class="p-2 hover:bg-gray-100 rounded-full"><i class="bi bi-emoji-neutral text-2xl"></i></button>
+                        <button onclick="trackMood('sad')" class="p-2 hover:bg-gray-100 rounded-full"><i class="bi bi-emoji-frown text-2xl"></i></button>
+                    </div>
+                </div>
+                <!-- Add more dashboard widgets here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Journal Section -->
+    <section id="journal" class="min-h-screen pt-20 hidden">
+        <div class="max-w-4xl mx-auto px-4 py-8">
+            <h2 class="text-3xl font-bold mb-6">My Journal</h2>
+            <div class="mb-6">
+                <textarea id="journalEntry" rows="6" class="w-full p-4 border rounded-lg focus:outline-none focus:border-teal-500" placeholder="Write your thoughts here..."></textarea>
+                <button onclick="saveJournalEntry()" class="mt-4 bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700">Save Entry</button>
+            </div>
+            <div id="journalEntries" class="space-y-4">
+                <!-- Journal entries will be populated here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Music & Quotes Section -->
+    <section id="music-quotes" class="min-h-screen pt-20 hidden">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4">Calming Music</h3>
+                    <div class="space-y-4">
+                        <!-- Add music player components here -->
+                        <div class="p-4 border rounded-lg">
+                            <h4 class="font-semibold">Peaceful Piano</h4>
+                            <audio controls class="w-full mt-2">
+                                <source src="https://example.com/peaceful-piano.mp3" type="audio/mpeg">
+                            </audio>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4">Daily Quotes</h3>
+                    <div id="quoteContainer" class="p-4 border rounded-lg">
+                        <p id="quoteText" class="text-lg italic">"The only way to do great work is to love what you do."</p>
+                        <p id="quoteAuthor" class="mt-2 text-right">- Steve Jobs</p>
+                    </div>
+                    <button onclick="getNewQuote()" class="mt-4 bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700">New Quote</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Profile Section -->
+    <section id="profile" class="min-h-screen pt-20 hidden">
+        <div class="max-w-2xl mx-auto px-4 py-8">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold mb-6">Profile Settings</h2>
+                <form id="profileForm" onsubmit="updateProfile(event)">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Username</label>
+                        <input type="text" id="profileUsername" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-teal-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                        <input type="email" id="profileEmail" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-teal-500">
+                    </div>
+                    <button type="submit" class="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">HeartHeal</h3>
+                    <p class="text-gray-400">Your journey to mental wellness starts here.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Connect With Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="bi bi-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 text-center text-gray-400">
+                <p>&copy; 2024 HeartHeal. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        const API_URL = 'https://heartheals.onrender.com';
+
+        // Show/hide loading spinner
+        const toggleLoading = (show) => {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        };
+
+        // Show notification
+        const showNotification = (message, isError = false) => {
+            alert(message); // Replace with better notification system
+        };
+
+        // Section visibility management
+        const showSection = (sectionId) => {
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+        };
+
+        // Auth state management
+        const updateAuthState = (isLoggedIn) => {
+            const authRequired = document.querySelectorAll('.auth-required');
+            const nonAuthRequired = document.querySelectorAll('#loginBtn, #signupBtn');
+            
+            authRequired.forEach(el => el.classList.toggle('hidden', !isLoggedIn));
+            nonAuthRequired.forEach(el => el.classList.toggle('hidden', isLoggedIn));
+            
+            if (isLoggedIn) {
+                showSection('dashboard');
+            } else {
+                showSection('home');
+            }
+        };
+
+        // Handle Login
+        const handleLogin = async (event) => {
+            event.preventDefault();
+            toggleLoading(true);
+
+            try {
+                const response = await fetch(`${API_URL}/api/users/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: document.getElementById('loginEmail').value,
+                        password: document.getElementById('loginPassword').value
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    currentUser = data.user;
+                    updateAuthState(true);
+                    showNotification('Login successful!');
+                } else {
+                    throw new Error(data.message || 'Login failed');
+                }
+            } catch (error) {
+                showNotification(error.message, true);
+            } finally {
+                toggleLoading(false);
+            }
+        };
+
+        // Handle Signup
+        const handleSignup = async (event) => {
+            event.preventDefault();
+            toggleLoading(true);
+
+            try {
+                const response = await fetch(`${API_URL}/api/users/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: document.getElementById('signupUsername').value,
+                        email: document.getElementById('signupEmail').value,
+                        password: document.getElementById('signupPassword').value
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showNotification('Registration successful! Please login.');
+                    showSection('login');
+                } else {
+                    throw new Error(data.message || 'Registration failed');
+                }
+            } catch (error) {
+                showNotification(error.message, true);
+            } finally {
+                toggleLoading(false);
+            }
+        };
+
+        // Handle Logout
+        const logout = () => {
+            localStorage.removeItem('token');
+            currentUser = null;
+            updateAuthState(false);
+            showNotification('Logged out successfully');
+        };
+
+        // Journal functions
+        const saveJournalEntry = async () => {
+            const entry = document.getElementById('journalEntry').value;
+            if (!entry.trim()) return;
+
+            toggleLoading(true);
+            try {
+                const response = await fetch(`${API_URL}/api/journals`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ content: entry })
+                });
+
+                if (response.ok) {
+                    document.getElementById('journalEntry').value = '';
+                    loadJournalEntries();
+                    showNotification('Journal entry saved!');
+                } else {
+                    throw new Error('Failed to save journal entry');
+                }
+            } catch (error) {
+                showNotification(error.message, true);
+            } finally {
+                toggleLoading(false);
+            }
+        };
+
+        // Load journal entries
+        const loadJournalEntries = async () => {
+            toggleLoading(true);
+            try {
+                const response = await fetch(`${API_URL}/api/journals`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (response.ok) {
+                    const entries = await response.json();
+                    const container = document.getElementById('journalEntries');
+                    container.innerHTML = entries.map(entry => `
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <p class="text-gray-700">${entry.content}</p>
+                            <p class="text-sm text-gray-500 mt-2">${new Date(entry.createdAt).toLocaleDateString()}</p>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                showNotification('Failed to load journal entries', true);
+            } finally {
+                toggleLoading(false);
+            }
+        };
+
+        // Profile functions
+        const loadProfile = async () => {
+            if (!currentUser) return;
+            
+            document.getElementById('profileUsername').value = currentUser.username;
+            document.getElementById('profileEmail').value = currentUser.email;
+        };
+
+        const updateProfile = async (event) => {
+            event.preventDefault();
+            toggleLoading(true);
+
+            try {
+                const response = await fetch(`${API_URL}/api/users/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        username: document.getElementById('profileUsername').value,
+                        email: document.getElementById('profileEmail').value
+                    })
+                });
+
+                if (response.ok) {
+                    showNotification('Profile updated successfully');
+                } else {
+                    throw new Error('Failed to update profile');
+                }
+            } catch (error) {
+                showNotification(error.message, true);
+            } finally {
+                toggleLoading(false);
+            }
+        };
+
+        // Mood tracking
+        const trackMood = async (mood) => {
+            toggleLoading(true);
+            try {
+                const response = await fetch(`${API_URL}/api/moods`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ mood })
+                });
+
+                if (response.ok) {
+                    showNotification('Mood tracked successfully!');
+                } else {
+                    throw new Error('Failed to track mood');
+                }
+            } catch (error) {
+                showNotification(error.message, true);
+            } finally {
+                toggleLoading(false);
+            }
+        };
+
+        // Quote functions
+        const getNewQuote = async () => {
+            toggleLoading(true);
+            try {
+                const response = await fetch(`${API_URL}/api/quotes/random`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (response.ok) {
+                    const quote = await response.json();
+                    document.getElementById('quoteText').textContent = quote.text;
+                    document.getElementById('quoteAuthor').textContent = `- ${quote.author}`;
+                }
+            } catch (error) {
+                showNotification('Failed to load quote', true);
+            } finally {
+                toggleLoading(false);
+            }
+        };
+
+        // Check authentication status on page load
+        window.onload = () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                // Verify token and load user data
+                fetch(`${API_URL}/api/users/verify`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.valid) {
+                        currentUser = data.user;
+                        updateAuthState(true);
+                        loadProfile();
+                    } else {
+                        logout();
+                    }
+                })
+                .catch(() => logout());
+            } else {
+                updateAuthState(false);
+            }
+        };
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
